@@ -245,7 +245,7 @@ This project was developed as a **Parallel & Distributed Computing (PDC) Lab Pro
 
 ---
 
-## 🙏 Acknowledgements
+##  Acknowledgements
 
 - [yt-dlp](https://github.com/yt-dlp/yt-dlp) — the powerful video download engine
 - [mpi4py](https://mpi4py.readthedocs.io/) — MPI for Python
