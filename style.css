@@ -1,0 +1,386 @@
+/* ==================== GLOBAL STYLES ==================== */
+* {
+    font-family: 'Times New Roman', Times, serif !important;
+}
+
+body {
+    background: linear-gradient(135deg, #0a0e27 0%, #1a1a2e 50%, #16213e 100%);
+    color: #ffffff !important;
+}
+
+/* Force white text everywhere */
+p, span, div, label, input, textarea, button {
+    color: #ffffff !important;
+}
+
+/* ==================== SIDEBAR ==================== */
+[data-testid="stSidebar"] {
+    background: linear-gradient(180deg, #1a1a2e 0%, #0f3460 100%);
+    border-right: 1px solid rgba(255, 75, 75, 0.2);
+}
+
+[data-testid="stSidebar"] * {
+    color: #ffffff !important;
+}
+
+[data-testid="stSidebar"] [data-testid="stMarkdownContainer"] h1,
+[data-testid="stSidebar"] [data-testid="stMarkdownContainer"] h2,
+[data-testid="stSidebar"] [data-testid="stMarkdownContainer"] h3 {
+    color: #ff4b4b !important;
+}
+
+/* ==================== BUTTONS ==================== */
+div.stButton > button {
+    background: linear-gradient(90deg, #ff4b4b 0%, #ff904b 100%);
+    color: white !important;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 15px rgba(255, 75, 75, 0.2);
+    font-family: 'Times New Roman', Times, serif !important;
+}
+
+div.stButton > button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(255, 75, 75, 0.4);
+}
+
+div.stButton > button:active {
+    transform: translateY(0);
+}
+
+div.stButton > button[disabled] {
+    background: linear-gradient(90deg, #555 0%, #666 100%);
+    cursor: not-allowed;
+    opacity: 0.6;
+    box-shadow: none;
+    color: white !important;
+}
+
+/* Primary button extra styling */
+div.stButton > button[kind="primary"] {
+    background: linear-gradient(90deg, #ff4b4b 0%, #ff1744 100%);
+    box-shadow: 0 4px 20px rgba(255, 75, 75, 0.3);
+    color: white !important;
+}
+
+/* ==================== INPUTS ==================== */
+textarea, input[type="text"], input[type="number"] {
+    background-color: #1e1e2e !important;
+    border: 2px solid #2a2a3e !important;
+    border-radius: 10px !important;
+    color: #ffffff !important;
+    transition: all 0.3s ease !important;
+    font-family: 'Times New Roman', Times, serif !important;
+}
+
+textarea::placeholder, input::placeholder {
+    color: #aaaaaa !important;
+}
+
+textarea:focus, input[type="text"]:focus, input[type="number"]:focus {
+    border-color: #ff4b4b !important;
+    box-shadow: 0 0 15px rgba(255, 75, 75, 0.2) !important;
+    color: #ffffff !important;
+}
+
+/* ==================== TABS ==================== */
+.stTabs [data-baseweb="tab-list"] {
+    gap: 8px;
+    background-color: transparent;
+}
+
+.stTabs [data-baseweb="tab"] {
+    background: linear-gradient(135deg, #1e1e2e 0%, #2a2a3e 100%);
+    border-radius: 10px 10px 0 0;
+    padding: 12px 24px;
+    color: #ffffff !important;
+    border: 2px solid transparent;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.stTabs [data-baseweb="tab"]:hover {
+    background: linear-gradient(135deg, #2a2a3e 0%, #353548 100%);
+    color: #ffffff !important;
+}
+
+.stTabs [aria-selected="true"] {
+    background: linear-gradient(135deg, #ff4b4b 0%, #ff904b 100%) !important;
+    color: white !important;
+    border-color: #ff4b4b !important;
+    box-shadow: 0 4px 15px rgba(255, 75, 75, 0.3);
+}
+
+.stTabs [data-baseweb="tab-panel"] {
+    background: rgba(30, 30, 46, 0.5);
+    border-radius: 0 0 10px 10px;
+    padding: 2rem;
+}
+
+.stTabs [data-baseweb="tab-panel"] * {
+    color: #ffffff !important;
+}
+
+/* ==================== PROGRESS BARS ==================== */
+.stProgress > div > div > div > div {
+    background: linear-gradient(90deg, #ff4b4b 0%, #ff904b 100%);
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(255, 75, 75, 0.3);
+}
+
+.stProgress > div > div > div {
+    background-color: #2a2a3e;
+    border-radius: 10px;
+}
+
+/* ==================== METRICS ==================== */
+[data-testid="stMetricValue"] {
+    color: #ffffff !important;
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+[data-testid="stMetricLabel"] {
+    color: #ffffff !important;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* ==================== CONTAINERS & CARDS ==================== */
+div[data-testid="stVerticalBlock"] > div {
+    background: linear-gradient(135deg, rgba(30, 30, 46, 0.8) 0%, rgba(42, 42, 62, 0.6) 100%);
+    padding: 1.5rem;
+    border-radius: 15px;
+    border: 1px solid rgba(255, 75, 75, 0.1);
+    margin-bottom: 1rem;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+}
+
+div[data-testid="stVerticalBlock"] > div:hover {
+    border-color: rgba(255, 75, 75, 0.3);
+    box-shadow: 0 8px 25px rgba(255, 75, 75, 0.15);
+    transform: translateY(-2px);
+}
+
+/* ==================== EXPANDERS ==================== */
+.streamlit-expanderHeader {
+    background: linear-gradient(90deg, #1e1e2e 0%, #2a2a3e 100%);
+    border-radius: 10px;
+    border: 2px solid rgba(255, 75, 75, 0.2);
+    color: #ff4b4b !important;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.streamlit-expanderHeader:hover {
+    background: linear-gradient(90deg, #2a2a3e 0%, #353548 100%);
+    border-color: rgba(255, 75, 75, 0.4);
+}
+
+/* ==================== ALERTS ==================== */
+.stAlert {
+    border-radius: 12px;
+    border-left: 4px solid;
+    padding: 1rem 1.5rem;
+    backdrop-filter: blur(10px);
+}
+
+div[data-baseweb="notification"][kind="info"] {
+    background: rgba(33, 150, 243, 0.15);
+    border-left-color: #2196F3;
+}
+
+div[data-baseweb="notification"][kind="success"] {
+    background: rgba(76, 175, 80, 0.15);
+    border-left-color: #4CAF50;
+}
+
+div[data-baseweb="notification"][kind="warning"] {
+    background: rgba(255, 152, 0, 0.15);
+    border-left-color: #FF9800;
+}
+
+div[data-baseweb="notification"][kind="error"] {
+    background: rgba(244, 67, 54, 0.15);
+    border-left-color: #F44336;
+}
+
+/* ==================== DATAFRAMES ==================== */
+[data-testid="stDataFrame"] {
+    background: rgba(30, 30, 46, 0.8);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 75, 75, 0.2);
+}
+
+/* ==================== VIDEO PLAYERS ==================== */
+video {
+    border-radius: 12px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+}
+
+video:hover {
+    box-shadow: 0 12px 35px rgba(255, 75, 75, 0.2);
+    transform: scale(1.02);
+}
+
+/* ==================== HEADINGS ==================== */
+h1 {
+    background: linear-gradient(90deg, #ff4b4b 0%, #ff904b 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 800;
+}
+
+h2 {
+    color: #ffffff !important;
+    font-weight: 700;
+    margin-top: 2rem;
+}
+
+h3 {
+    color: #ffffff !important;
+    font-weight: 600;
+}
+
+h4 {
+    color: #ffffff !important;
+    font-weight: 600;
+}
+
+h5, h6 {
+    color: #ffffff !important;
+}
+
+/* ==================== DIVIDERS ==================== */
+hr {
+    border: none;
+    height: 2px;
+    background: linear-gradient(90deg, transparent 0%, #ff4b4b 50%, transparent 100%);
+    margin: 2rem 0;
+}
+
+/* ==================== FILE UPLOADER ==================== */
+[data-testid="stFileUploader"] {
+    background: rgba(30, 30, 46, 0.8);
+    border: 2px dashed rgba(255, 75, 75, 0.3);
+    border-radius: 12px;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+}
+
+[data-testid="stFileUploader"]:hover {
+    border-color: rgba(255, 75, 75, 0.6);
+    background: rgba(42, 42, 62, 0.8);
+}
+
+/* ==================== SELECTBOX ==================== */
+[data-baseweb="select"] {
+    background-color: #1e1e2e !important;
+    border-radius: 10px !important;
+}
+
+[data-baseweb="select"] > div {
+    background-color: #1e1e2e !important;
+    border: 2px solid #2a2a3e !important;
+    border-radius: 10px !important;
+}
+
+[data-baseweb="select"] span,
+[data-baseweb="select"] div {
+    color: #ffffff !important;
+}
+
+[data-baseweb="select"]:hover > div {
+    border-color: #ff4b4b !important;
+}
+
+/* ==================== SLIDER ==================== */
+[data-baseweb="slider"] [data-testid="stTickBar"] > div {
+    background-color: #2a2a3e;
+}
+
+[data-baseweb="slider"] [data-testid="stThumbValue"] {
+    background: linear-gradient(90deg, #ff4b4b 0%, #ff904b 100%);
+    color: white;
+    font-weight: 600;
+}
+
+/* ==================== SCROLLBAR ==================== */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #1a1a2e;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #ff4b4b 0%, #ff904b 100%);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #ff1744 0%, #ff6b4b 100%);
+}
+
+/* ==================== ANIMATIONS ==================== */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+div[data-testid="stVerticalBlock"] {
+    animation: fadeIn 0.3s ease-out;
+}
+
+/* ==================== CAPTIONS ==================== */
+[data-testid="stCaptionContainer"] {
+    color: #ffffff !important;
+    font-size: 0.85rem;
+}
+
+/* ==================== TEXT ELEMENTS ==================== */
+.stMarkdown, .stMarkdown p, .stMarkdown span {
+    color: #ffffff !important;
+}
+
+/* ==================== LABELS ==================== */
+label, .stLabel {
+    color: #ffffff !important;
+}
+
+/* ==================== FILE UPLOADER TEXT ==================== */
+[data-testid="stFileUploader"] span,
+[data-testid="stFileUploader"] p {
+    color: #040404 !important;
+}
+
+/* ==================== RESPONSIVE ==================== */
+@media (max-width: 768px) {
+    div.stButton > button {
+        padding: 0.6rem 1rem;
+        font-size: 0.9rem;
+    }
+    
+    .stTabs [data-baseweb="tab"] {
+        padding: 10px 16px;
+        font-size: 0.9rem;
+    }
+}
