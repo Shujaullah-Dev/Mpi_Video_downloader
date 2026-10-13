@@ -17,7 +17,8 @@ downloads/
 *.egg
 
 # Streamlit
-.streamlit/
+.streamlit/*
+!.streamlit/config.toml
 
 # MPI & project status artifacts
 *.tmp
