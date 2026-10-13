@@ -4,6 +4,7 @@ import os
 import sys
 import subprocess
 import time
+import html
 import pandas as pd
 import glob
 from datetime import datetime
@@ -39,9 +40,10 @@ if 'completed_downloads' not in st.session_state:
 
 # Sidebar Configuration
 st.sidebar.title("⚙️ Configuration")
-num_ranks = st.sidebar.slider("Number of MPI Ranks", min_value=1, max_value=8, value=4, 
+num_ranks = st.sidebar.slider("Number of MPI Ranks", min_value=1, max_value=8, value=4,
                                help="More ranks = faster parallel downloads")
-output_dir = st.sidebar.text_input("Output Directory", value="downloads")
+output_dir = st.sidebar.text_input("Output Directory", value="downloads",
+                                   help="Where downloaded videos and status files are saved")
 
 st.sidebar.divider()
 st.sidebar.subheader("Advanced Options")
@@ -51,13 +53,9 @@ video_quality = st.sidebar.selectbox("Video Quality", ["best", "worst", "720p", 
 
 # Main Title
 st.markdown("""
-    <div style='text-align: center; padding: 2rem 0;'>
-        <h1 style='background: linear-gradient(90deg, #ff4b4b 0%, #ff904b 100%); 
-                   -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-                   font-size: 3rem; font-weight: bold;'>
-            🚀 MPI Video Downloader Pro
-        </h1>
-        <p style='color: #888; font-size: 1.2rem;'>High-Performance Parallel Video Downloading</p>
+    <div class="hero">
+        <h1 class="hero-title">🚀 MPI Video Downloader Pro</h1>
+        <p class="hero-subtitle">High-Performance Parallel Video Downloading</p>
     </div>
 """, unsafe_allow_html=True)
 
@@ -72,14 +70,23 @@ with tab1:
     
     with col1:
         urls_input = st.text_area(
-            "Video URLs (one per line)", 
+            "Video URLs (one per line)",
             height=200,
             placeholder="https://www.youtube.com/watch?v=...\nhttps://vimeo.com/...\nhttps://www.youtube.com/shorts/...",
             key="urls_input"
         )
-    
+
+        url_count = len([u for u in urls_input.split('\n') if u.strip()]) if urls_input else 0
+        if url_count > 0:
+            st.markdown(
+                f"<div class='hint'>📎 {url_count} URL{'s' if url_count != 1 else ''} detected</div>",
+                unsafe_allow_html=True
+            )
+
     with col2:
         st.markdown("##### 📁 Bulk Import")
+        st.markdown("<div class='hint'>Upload a <b>.txt</b> or <b>.csv</b> file with one URL per line.</div>",
+                    unsafe_allow_html=True)
         uploaded_file = st.file_uploader("Upload URL list (TXT/CSV)", type=['txt', 'csv'])
         
         if uploaded_file:
@@ -95,8 +102,9 @@ with tab1:
             st.rerun()
     
     st.divider()
-    
+
     # Control Buttons
+    st.markdown("##### 🎛️ Download Controls")
     col1, col2, col3, col4 = st.columns(4)
     
     with col1:
@@ -196,24 +204,35 @@ with tab1:
 with tab2:
     if st.session_state.download_active:
         st.markdown("### 🔄 Live Download Progress")
-        
-        # Create containers for each rank
+
+        # Overall progress summary
+        overall_col1, overall_col2 = st.columns([3, 1])
+        with overall_col1:
+            st.markdown("##### Overall Progress")
+            overall_bar = overall_col1.empty()
+        overall_count = overall_col2.empty()
+        overall_bar.progress(0.0)
+        overall_count.metric("Completed", f"0 / {st.session_state.download_stats['total']}")
+
+        # Create containers for each rank (2-column grid)
         rank_containers = []
+        rank_grid = st.columns(2)
         for rank in range(num_ranks):
-            with st.container():
+            with rank_grid[rank % 2].container():
                 st.markdown(f"""
-                    <div style='background: linear-gradient(135deg, #1e1e1e 0%, #2a2a2a 100%);
-                                padding: 1.5rem; border-radius: 12px; margin-bottom: 1rem;
-                                border-left: 4px solid #ff4b4b;'>
-                        <h4 style='margin: 0; color: #ff4b4b;'>Rank {rank}</h4>
+                    <div class="rank-card">
+                        <div class="rank-header">
+                            <span class="rank-badge">Rank {rank}</span>
+                            <span class="rank-subtitle">Worker process</span>
+                        </div>
                     </div>
                 """, unsafe_allow_html=True)
-                
+
                 col1, col2 = st.columns([3, 1])
                 status_text = col1.empty()
                 progress_bar = col1.empty()
                 stats_col = col2.empty()
-                
+
                 rank_containers.append({
                     'status': status_text,
                     'progress': progress_bar,
@@ -284,6 +303,12 @@ with tab2:
                 st.session_state.download_stats['success'] = success_count
                 st.session_state.download_stats['failed'] = failed_count
                 st.session_state.completed_downloads = all_data
+
+                # Update overall progress
+                total = st.session_state.download_stats['total']
+                done = success_count + failed_count
+                overall_bar.progress(done / total if total > 0 else 0.0)
+                overall_count.metric("Completed", f"{done} / {total}")
             
             # Check completion
             if active_ranks == 0 and process and process.poll() is not None:
@@ -307,7 +332,13 @@ with tab2:
             st.info(f"📝 Log saved: {log_file}")
             st.rerun()
     else:
-        st.info("👆 Start a download from the Download tab to see progress here.")
+        st.markdown("""
+            <div class="empty-state">
+                <div class="empty-icon">📊</div>
+                <h4>No active download session</h4>
+                <p>Start a download from the <b>Download</b> tab to monitor live progress here.</p>
+            </div>
+        """, unsafe_allow_html=True)
 
 # ==================== TAB 3: COMPLETED ====================
 with tab3:
@@ -344,25 +375,55 @@ with tab3:
         # Display as cards
         if filtered_data:
             cols = st.columns(3)
-            
+
             for i, item in enumerate(filtered_data):
                 with cols[i % 3]:
                     if item.get('status') == 'success':
                         file_path = item.get('file_path', '')
-                        
+
                         if os.path.exists(file_path):
                             st.video(file_path)
-                            st.markdown(f"**{item.get('title', 'Unknown')}**")
-                            st.caption(f"⏱️ {item.get('time', 0):.1f}s | Rank {item.get('rank', '?')}")
+                            st.markdown(f"""
+                                <div class="result-card success">
+                                    <p class="result-title">{html.escape(str(item.get('title', 'Unknown')))}</p>
+                                    <div class="result-meta">
+                                        <span class="status-pill success">✓ Success</span>
+                                        <span class="meta-pill">⏱️ {item.get('time', 0):.1f}s</span>
+                                        <span class="meta-pill">Rank {item.get('rank', '?')}</span>
+                                    </div>
+                                </div>
+                            """, unsafe_allow_html=True)
                         else:
-                            st.error(f"❌ File not found: {file_path}")
+                            st.markdown(f"""
+                                <div class="result-card error">
+                                    <p class="result-title">❌ File not found</p>
+                                    <div class="result-meta">
+                                        <span class="meta-pill">{html.escape(str(file_path))}</span>
+                                    </div>
+                                </div>
+                            """, unsafe_allow_html=True)
                     else:
-                        st.error(f"❌ Failed: {item.get('title', item.get('url', 'Unknown'))}")
-                        st.caption(f"Error: {item.get('error', 'Unknown error')}")
+                        display_title = html.escape(str(item.get('url', item.get('title', 'Unknown'))))
+                        error_msg = html.escape(str(item.get('error', 'Unknown error')))
+                        st.markdown(f"""
+                            <div class="result-card error">
+                                <p class="result-title">❌ {display_title}</p>
+                                <div class="result-meta">
+                                    <span class="status-pill error">✗ Failed</span>
+                                    <span class="meta-pill">{error_msg}</span>
+                                </div>
+                            </div>
+                        """, unsafe_allow_html=True)
         else:
             st.info("No downloads match your filters.")
     else:
-        st.info("No completed downloads yet. Start a download to see results here!")
+        st.markdown("""
+            <div class="empty-state">
+                <div class="empty-icon">📥</div>
+                <h4>No completed downloads yet</h4>
+                <p>Start a download to see your results here.</p>
+            </div>
+        """, unsafe_allow_html=True)
 
 # ==================== TAB 4: STATISTICS ====================
 with tab4:
@@ -420,14 +481,20 @@ with tab4:
             if not df.empty:
                 display_df = df[['rank', 'title', 'status', 'time']].copy()
                 display_df['time'] = display_df['time'].round(2)
-                st.dataframe(display_df, use_container_width=True, hide_index=True)
+                st.dataframe(display_df, width="stretch", hide_index=True)
     else:
-        st.info("Start a download to see statistics here!")
+        st.markdown("""
+            <div class="empty-state">
+                <div class="empty-icon">📈</div>
+                <h4>No statistics yet</h4>
+                <p>Start a download to see success rates and timing here.</p>
+            </div>
+        """, unsafe_allow_html=True)
 
 # Footer
 st.divider()
 st.markdown("""
-    <div style='text-align: center; color: #666; padding: 1rem;'>
-        <p>MPI Video Downloader Pro | Powered by MPI4Py & yt-dlp</p>
+    <div class="footer">
+        <p>MPI Video Downloader Pro · Powered by MPI4Py &amp; yt-dlp</p>
     </div>
 """, unsafe_allow_html=True)
