@@ -20,27 +20,50 @@ A Parallel & Distributed Computing (PDC) project that leverages **MPI (Message P
 
 ---
 
-##  Architecture
+# Architecture Diagram
 
-```
-┌─────────────────────────────────────────┐
-│           Streamlit Web UI (app.py)      │
-│  - URL input & config                    │
-│  - Launches mpiexec subprocess           │
-│  - Reads status_rank_*.json per rank     │
-└────────────────┬────────────────────────┘
-                 │ mpiexec -n <N>
-                 ▼
-┌─────────────────────────────────────────┐
-│   MPI Worker Pool (mpi_video_downloader.py)       │
-│                                         │
-│  Rank 0  │  Rank 1  │  Rank 2  │  ...   │
-│  URL 0   │  URL 1   │  URL 2   │        │
-│  URL N   │  URL N+1 │  URL N+2 │        │
-│                                         │
-│  Each rank writes status_rank_<r>.json  │
-│  MPI Barrier synchronizes at finish     │
-└─────────────────────────────────────────┘
+```mermaid
+flowchart TD
+    %% Styling Definitions
+    classDef uiStyle fill:#1e293b,stroke:#38bdf8,stroke-width:2px,color:#fff,font-weight:bold;
+    classDef processStyle fill:#0f172a,stroke:#64748b,stroke-width:1.5px,color:#f8fafc;
+    classDef workerStyle fill:#1e1b4b,stroke:#818cf8,stroke-width:1.5px,color:#fff;
+    classDef syncStyle fill:#064e3b,stroke:#34d399,stroke-width:2px,color:#fff,font-weight:bold;
+
+    %% Streamlit UI Section
+    subgraph Streamlit_UI ["🖥️ Streamlit Web UI (app.py)"]
+        UI_Input["URL Input & Configuration"]:::processStyle
+        UI_Launch["Launches mpiexec Subprocess"]:::processStyle
+        UI_Read["Reads status_rank_*.json per Rank"]:::processStyle
+        
+        UI_Input --> UI_Launch
+        UI_Launch -. Reads Real-Time Progress .-> UI_Read
+    end
+
+    %% MPI Execution Link
+    UI_Launch -->|mpiexec -n N| MPI_Pool
+
+    %% MPI Worker Pool Section
+    subgraph MPI_Pool ["⚡ MPI Worker Pool (mpi_video_downloader.py)"]
+        direction TB
+        
+        subgraph Workers ["Parallel Process Ranks"]
+            direction LR
+            Rank0["<b>Rank 0</b><br>• URL 0<br>• URL N"]:::workerStyle
+            Rank1["<b>Rank 1</b><br>• URL 1<br>• URL N+1"]:::workerStyle
+            Rank2["<b>Rank 2</b><br>• URL 2<br>• URL N+2"]:::workerStyle
+            RankMore["<b>...</b><br>• URL ..."]:::workerStyle
+        end
+
+        StatusWrite["📝 Each rank writes status_rank_&lt;r&gt;.json"]:::processStyle
+        Barrier["🏁 MPI Barrier Synchronizes at Finish"]:::syncStyle
+
+        Workers --> StatusWrite
+        StatusWrite --> Barrier
+    end
+
+    %% Status File Feedback Loop back to UI
+    StatusWrite -. Status JSON Files .-> UI_Read
 ```
 
 **URL Distribution:** Round-robin — URL `i` goes to rank `i % size`.
