@@ -31,7 +31,7 @@ flowchart TD
     classDef syncStyle fill:#064e3b,stroke:#34d399,stroke-width:2px,color:#fff,font-weight:bold;
 
     %% Streamlit UI Section
-    subgraph Streamlit_UI ["🖥️ Streamlit Web UI (app.py)"]
+    subgraph Streamlit_UI [" Streamlit Web UI (app.py)"]
         UI_Input["URL Input & Configuration"]:::processStyle
         UI_Launch["Launches mpiexec Subprocess"]:::processStyle
         UI_Read["Reads status_rank_*.json per Rank"]:::processStyle
@@ -44,7 +44,7 @@ flowchart TD
     UI_Launch -->|mpiexec -n N| MPI_Pool
 
     %% MPI Worker Pool Section
-    subgraph MPI_Pool ["⚡ MPI Worker Pool (mpi_video_downloader.py)"]
+    subgraph MPI_Pool [" MPI Worker Pool (mpi_video_downloader.py)"]
         direction TB
         
         subgraph Workers ["Parallel Process Ranks"]
@@ -55,8 +55,8 @@ flowchart TD
             RankMore["<b>...</b><br>• URL ..."]:::workerStyle
         end
 
-        StatusWrite["📝 Each rank writes status_rank_&lt;r&gt;.json"]:::processStyle
-        Barrier["🏁 MPI Barrier Synchronizes at Finish"]:::syncStyle
+        StatusWrite[" Each rank writes status_rank_&lt;r&gt;.json"]:::processStyle
+        Barrier[" MPI Barrier Synchronizes at Finish"]:::syncStyle
 
         Workers --> StatusWrite
         StatusWrite --> Barrier
