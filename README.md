@@ -21,6 +21,45 @@ A Parallel & Distributed Computing (PDC) project that leverages **MPI (Message P
 ---
 
 # Architecture Diagram
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#111827', 'edgeLabelBackground':'#0f172a', 'tertiaryColor': '#0f172a'}}}%%
+flowchart LR
+    classDef ui fill:#0f172a,stroke:#06b6d4,stroke-width:2px,color:#ecfeff,font-weight:bold;
+    classDef worker fill:#1e1b4b,stroke:#a78bfa,stroke-width:2px,color:#f5f3ff;
+    classDef io fill:#1c1917,stroke:#f59e0b,stroke-width:2px,color:#fef3c7;
+    classDef sync fill:#052e16,stroke:#22c55e,stroke-width:2px,color:#dcfce7,font-weight:bold;
+
+    subgraph S1["1 · FRONTEND (app.py)"]
+        direction TB
+        In([" URL Input &<br/>Rank Config"]):::ui
+        Exec{{" mpiexec -n N"}}:::ui
+        Mon[/" Live Rank<br/>Progress UI"/]:::ui
+        In --> Exec
+    end
+
+    subgraph S2["2 · MPI CLUSTER (mpi_video_downloader.py)"]
+        direction TB
+        R0[["Rank 0 → URL 0, N"]]:::worker
+        R1[["Rank 1 → URL 1, N+1"]]:::worker
+        R2[["Rank 2 → URL 2, N+2"]]:::worker
+        RN[["Rank r → URL r, N+r"]]:::worker
+    end
+
+    subgraph S3["3 · STATE & SYNC"]
+        direction TB
+        Files[(" status_rank_*.json")]:::io
+        Gate{{" MPI Barrier"}}:::sync
+    end
+
+    Exec ==> R0 & R1 & R2 & RN
+    R0 & R1 & R2 & RN -.->|"Write Progress"| Files
+    R0 & R1 & R2 & RN -->|"Finish"| Gate
+    Files -.->|"Poll JSON"| Mon
+    Gate ==>|"Complete"| Mon
+
+    style S1 fill:#082f49,stroke:#06b6d4,stroke-width:2px,color:#67e8f9
+    style S2 fill:#1e1b4b,stroke:#8b5cf6,stroke-width:2px,color:#c4b5fd
+    style S3 fill:#022c22,stroke:#10b981,stroke-width:2px,color:#6ee7b7
 
 ```mermaid
 flowchart TD
@@ -65,7 +104,6 @@ flowchart TD
     %% Status File Feedback Loop back to UI
     StatusWrite -. Status JSON Files .-> UI_Read
 ```
-
 **URL Distribution:** Round-robin — URL `i` goes to rank `i % size`.
 
 ---
